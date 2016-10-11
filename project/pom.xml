@@ -14,10 +14,16 @@
 	<properties>
 		<spark.version>1.6.1</spark.version>
 		<hadoop.version>2.5.0-cdh5.3.6</hadoop.version>
+		<hbase.version>0.98.6-cdh5.3.6</hbase.version>
+		<hive.version>0.13.1-cdh5.3.6</hive.version>
 		<mysql.version>5.1.18</mysql.version>
+		<fastjson.version>1.1.36</fastjson.version>
+		<fastutil.version>5.0.9</fastutil.version>
+		<gson.version>2.6.2</gson.version>
+		<uasparser.version>0.6.1</uasparser.version>
 	</properties>
 
-	<!-- 需要给定cloudera公司的cdh版本的maven库地址 -->
+	<!-- cloudera公司cdh版本的maven库地址 -->
 	<repositories>
 		<repository>
 			<id>cloudera</id>
@@ -25,6 +31,7 @@
 		</repository>
 	</repositories>
 
+	<!-- maven依赖 -->
 	<dependencies>
 		<dependency>
 			<groupId>org.apache.spark</groupId>
@@ -47,14 +54,34 @@
 			<version>${spark.version}</version>
 		</dependency>
 		<dependency>
+			<groupId>org.apache.spark</groupId>
+			<artifactId>spark-streaming-kafka_2.10</artifactId>
+			<version>${spark.version}</version>
+		</dependency>
+		<dependency>
 			<groupId>org.apache.hadoop</groupId>
 			<artifactId>hadoop-client</artifactId>
 			<version>${hadoop.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.spark</groupId>
-			<artifactId>spark-streaming-kafka_2.10</artifactId>
-			<version>${spark.version}</version>
+			<groupId>org.apache.hbase</groupId>
+			<artifactId>hbase-client</artifactId>
+			<version>${hbase.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.hbase</groupId>
+			<artifactId>hbase-server</artifactId>
+			<version>${hbase.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.hive</groupId>
+			<artifactId>hive-exec</artifactId>
+			<version>${hive.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.alibaba</groupId>
+			<artifactId>fastjson</artifactId>
+			<version>${fastjson.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>mysql</groupId>
@@ -62,73 +89,135 @@
 			<version>${mysql.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>com.alibaba</groupId>
-			<artifactId>fastjson</artifactId>
-			<version>1.1.36</version>
-		</dependency>
-		<dependency>
 			<groupId>fastutil</groupId>
 			<artifactId>fastutil</artifactId>
-			<version>5.0.9</version>
+			<version>${fastutil.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>cz.mallat.uasparser</groupId>
+			<artifactId>uasparser</artifactId>
+			<version>${uasparser.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.google.code.gson</groupId>
+			<artifactId>gson</artifactId>
+			<version>${gson.version}</version>
 		</dependency>
 	</dependencies>
 
+	<!-- 环境概念 -->
+	<profiles>
+		<profile>
+			<!-- 本地环境 -->
+			<id>local</id>
+			<activation>
+				<!-- 默认环境，只能存在一个环境为true -->
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<build>
+				<!-- 插件信息 -->
+				<plugins>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>build-helper-maven-plugin</artifactId>
+						<version>1.4</version>
+						<executions>
+							<execution>
+								<id>add-source</id>
+								<phase>generate-sources</phase>
+								<goals>
+									<goal>add-source</goal>
+								</goals>
+								<configuration>
+									<sources>
+										<!-- 将指定包的java文件进行编译打包操作 -->
+										<source>${basedir}/src/main/java</source>
+										<source>${basedir}/src/main/extr</source>
+									</sources>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		<profile>
+			<!-- 开发环境 -->
+			<id>dev</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>build-helper-maven-plugin</artifactId>
+						<version>1.4</version>
+						<executions>
+							<execution>
+								<id>add-source</id>
+								<phase>generate-sources</phase>
+								<goals>
+									<goal>add-source</goal>
+								</goals>
+								<configuration>
+									<sources>
+										<source>${basedir}/src/main/java</source>
+									</sources>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<!-- 将第三方的依赖包，一起打入到最终形成的jar文件中 -->
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-shade-plugin</artifactId>
+						<version>2.1</version>
+						<executions>
+							<execution>
+								<phase>package</phase>
+								<goals>
+									<goal>shade</goal>
+								</goals>
+								<configuration>
+									<artifactSet>
+										<includes>
+											<!-- 打入jar包的maven依赖 -->
+											<include>com.alibaba:fastjson</include>
+											<include>mysql:mysql-connector-java</include>
+											<include>fastutil:fastutil</include>
+											<include>cz.mallat.uasparser:uasparser</include>
+											<include>com.google.code.gson:gson</include>
+										</includes>
+									</artifactSet>
+									<transformers>
+										<transformer
+											implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+											<!-- jar包入口类 -->
+											<mainClass>com.phantom.spark.sparkproject.meituan.spark.ad.AdClickRealTimeStatSpark</mainClass>
+										</transformer>
+									</transformers>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+
+	<!-- 构建环境 -->
 	<build>
-		<sourceDirectory>src/main/java</sourceDirectory>
-		<testSourceDirectory>src/test/java</testSourceDirectory>
+		<!-- jar包名 -->
+		<finalName>project</finalName>
 		<plugins>
-			<plugin>
-				<artifactId>maven-assembly-plugin</artifactId>
-				<configuration>
-					<descriptorRefs>
-						<descriptorRef>jar-with-dependencies</descriptorRef>
-					</descriptorRefs>
-					<archive>
-						<manifest>
-							<mainClass></mainClass>
-						</manifest>
-					</archive>
-				</configuration>
-				<executions>
-					<execution>
-						<id>make-assembly</id>
-						<phase>package</phase>
-						<goals>
-							<goal>single</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>exec-maven-plugin</artifactId>
-				<version>1.2.1</version>
-				<executions>
-					<execution>
-						<goals>
-							<goal>exec</goal>
-						</goals>
-					</execution>
-				</executions>
-				<configuration>
-					<executable>java</executable>
-					<includeProjectDependencies>true</includeProjectDependencies>
-					<includePluginDependencies>false</includePluginDependencies>
-					<classpathScope>compile</classpathScope>
-					<mainClass>com.phantom.spark.sparkproject.meituan.App</mainClass>
-				</configuration>
-			</plugin>
-
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.3</version>
 				<configuration>
-					<source>1.6</source>
-					<target>1.6</target>
+					<source>1.7</source>
+					<target>1.7</target>
 				</configuration>
 			</plugin>
-
 		</plugins>
 	</build>
+
 </project>
