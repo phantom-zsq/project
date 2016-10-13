@@ -19,9 +19,10 @@ public class TaskDAOImpl implements ITaskDAO {
 	 * @return 任务
 	 */
 	public Task findById(long taskid) {
+		
 		final Task task = new Task();
 		
-		String sql = "select * from task where task_id=?";
+		String sql = "select * from task where taskid=?";
 		Object[] params = new Object[]{taskid};
 		
 		JDBCHelper jdbcHelper = JDBCHelper.getInstance();
