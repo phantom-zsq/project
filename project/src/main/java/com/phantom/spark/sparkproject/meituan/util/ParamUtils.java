@@ -1,6 +1,5 @@
 package com.phantom.spark.sparkproject.meituan.util;
 
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.phantom.spark.sparkproject.meituan.conf.ConfigurationManager;
 import com.phantom.spark.sparkproject.meituan.constant.Constants;
@@ -41,11 +40,7 @@ public class ParamUtils {
 	 * @return 参数
 	 */
 	public static String getParam(JSONObject jsonObject, String field) {
-		JSONArray jsonArray = jsonObject.getJSONArray(field);
-		if(jsonArray != null && jsonArray.size() > 0) {
-			return jsonArray.getString(0);
-		}
-		return null;
+		
+		return jsonObject.getString(field);
 	}
-	
 }
