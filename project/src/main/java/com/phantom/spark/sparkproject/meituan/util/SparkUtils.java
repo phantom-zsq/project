@@ -10,9 +10,9 @@ import org.apache.spark.sql.SQLContext;
 import org.apache.spark.sql.hive.HiveContext;
 
 import com.alibaba.fastjson.JSONObject;
-import com.phantom.spark.sparkproject.meituan.MockData;
 import com.phantom.spark.sparkproject.meituan.conf.ConfigurationManager;
 import com.phantom.spark.sparkproject.meituan.constant.Constants;
+import com.phantom.spark.sparkproject.meituan.mock.MockData;
 
 /**
  * Spark工具类

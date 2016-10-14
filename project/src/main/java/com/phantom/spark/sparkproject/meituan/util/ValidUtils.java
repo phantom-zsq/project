@@ -79,7 +79,7 @@ public class ValidUtils {
 	}
 	
 	/**
-	 * 校验数据中的指定字段，是否在指定范围内
+	 * 校验数据中的指定字段得值是否和参数字段的值相等
 	 * @param data 数据
 	 * @param dataField 数据字段
 	 * @param parameter 参数

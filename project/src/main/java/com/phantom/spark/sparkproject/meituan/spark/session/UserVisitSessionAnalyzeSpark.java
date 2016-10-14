@@ -33,7 +33,6 @@ import scala.Tuple2;
 
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.base.Optional;
-import com.phantom.spark.sparkproject.meituan.MockData;
 import com.phantom.spark.sparkproject.meituan.conf.ConfigurationManager;
 import com.phantom.spark.sparkproject.meituan.constant.Constants;
 import com.phantom.spark.sparkproject.meituan.dao.ISessionAggrStatDAO;
@@ -49,6 +48,7 @@ import com.phantom.spark.sparkproject.meituan.domain.SessionRandomExtract;
 import com.phantom.spark.sparkproject.meituan.domain.Task;
 import com.phantom.spark.sparkproject.meituan.domain.Top10Category;
 import com.phantom.spark.sparkproject.meituan.domain.Top10Session;
+import com.phantom.spark.sparkproject.meituan.mock.MockData;
 import com.phantom.spark.sparkproject.meituan.util.DateUtils;
 import com.phantom.spark.sparkproject.meituan.util.NumberUtils;
 import com.phantom.spark.sparkproject.meituan.util.ParamUtils;
@@ -87,6 +87,7 @@ import com.phantom.spark.sparkproject.meituan.util.ValidUtils;
 public class UserVisitSessionAnalyzeSpark {
 	
 	public static void main(String[] args) {
+		
 		// 构建Spark上下文
 		SparkConf conf = new SparkConf()
 				.setAppName(Constants.SPARK_APP_NAME_SESSION)
@@ -99,17 +100,17 @@ public class UserVisitSessionAnalyzeSpark {
 				.set("spark.shuffle.io.maxRetries", "60")  
 				.set("spark.shuffle.io.retryWait", "60")   
 				.set("spark.serializer", "org.apache.spark.serializer.KryoSerializer")
+				/**
+				 * 比如，获取top10热门品类功能中，二次排序，自定义了一个Key
+				 * 那个key是需要在进行shuffle的时候，进行网络传输的，因此也是要求实现序列化的
+				 * 启用Kryo机制以后，就会用Kryo去序列化和反序列化CategorySortKey
+				 * 所以这里要求，为了获取最佳性能，注册一下我们自定义的类
+				 */
 				.registerKryoClasses(new Class[]{
 						CategorySortKey.class,
-						IntList.class});   
-		SparkUtils.setMaster(conf); 
+						IntList.class});
 		
-		/**
-		 * 比如，获取top10热门品类功能中，二次排序，自定义了一个Key
-		 * 那个key是需要在进行shuffle的时候，进行网络传输的，因此也是要求实现序列化的
-		 * 启用Kryo机制以后，就会用Kryo去序列化和反序列化CategorySortKey
-		 * 所以这里要求，为了获取最佳性能，注册一下我们自定义的类
-		 */
+		SparkUtils.setMaster(conf); 
 		
 		JavaSparkContext sc = new JavaSparkContext(conf);
 //		sc.checkpointFile("hdfs://");
@@ -434,10 +435,10 @@ public class UserVisitSessionAnalyzeSpark {
 								userid = row.getLong(1);
 							}
 							String searchKeyword = row.getString(5);
-							Long clickCategoryId = row.getLong(6);
+							Object clickCategoryId = row.get(6);
 							
 							// 实际上这里要对数据说明一下
-							// 并不是每一行访问行为都有searchKeyword何clickCategoryId两个字段的
+							// 并不是每一行访问行为都有searchKeyword和clickCategoryId两个字段的
 							// 其实，只有搜索行为，是有searchKeyword字段的
 							// 只有点击品类的行为，是有clickCategoryId字段的
 							// 所以，任何一行行为数据，都不可能两个字段都有，所以数据是可能出现null值的
@@ -2265,5 +2266,4 @@ public class UserVisitSessionAnalyzeSpark {
 			}
 		});
 	}
-	
 }
