@@ -10,10 +10,30 @@ Target Server Type    : MYSQL
 Target Server Version : 50513
 File Encoding         : 65001
 
-Date: 2016-10-14 20:31:08
+Date: 2016-10-14 21:13:54
 */
 
 SET FOREIGN_KEY_CHECKS=0;
+
+-- ----------------------------
+-- Table structure for area_top3_product
+-- ----------------------------
+DROP TABLE IF EXISTS `area_top3_product`;
+CREATE TABLE `area_top3_product` (
+  `task_id` bigint(20) NOT NULL,
+  `area` varchar(255) DEFAULT NULL,
+  `area_level` varchar(255) DEFAULT NULL,
+  `product_id` bigint(20) DEFAULT NULL,
+  `city_infos` varchar(255) DEFAULT NULL,
+  `click_count` bigint(20) DEFAULT NULL,
+  `product_name` varchar(255) DEFAULT NULL,
+  `product_status` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`task_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+-- Records of area_top3_product
+-- ----------------------------
 
 -- ----------------------------
 -- Table structure for city_info
@@ -45,21 +65,21 @@ INSERT INTO `city_info` VALUES ('9', '杭州', '华东');
 -- ----------------------------
 DROP TABLE IF EXISTS `task`;
 CREATE TABLE `task` (
-  `taskid` bigint(20) NOT NULL,
-  `taskName` varchar(255) DEFAULT NULL,
-  `createTime` varchar(255) DEFAULT NULL,
-  `startTime` varchar(255) DEFAULT NULL,
-  `finishTime` varchar(255) DEFAULT NULL,
-  `taskType` varchar(255) DEFAULT NULL,
-  `taskStatus` varchar(255) DEFAULT NULL,
-  `taskParam` varchar(10000) DEFAULT NULL,
-  PRIMARY KEY (`taskid`)
+  `task_id` bigint(20) NOT NULL,
+  `task_name` varchar(255) DEFAULT NULL,
+  `create_time` varchar(255) DEFAULT NULL,
+  `start_time` varchar(255) DEFAULT NULL,
+  `finish_time` varchar(255) DEFAULT NULL,
+  `task_type` varchar(255) DEFAULT NULL,
+  `task_status` varchar(255) DEFAULT NULL,
+  `task_param` varchar(10000) DEFAULT NULL,
+  PRIMARY KEY (`task_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of task
 -- ----------------------------
-INSERT INTO `task` VALUES ('1', '', null, null, null, null, null, '');
+INSERT INTO `task` VALUES ('1', '', '', '', '', '', '', '');
 INSERT INTO `task` VALUES ('2', 'session', '2016-10-12', '2016-10-12', '2016-10-12', 'session', '0', '{\"startDate\":\"2016-10-01\",\"endDate\":\"2017-10-01\",\"startAge\":\"20\",\"endAge\":\"30\",\"professionals\":\"professional1\",\"cities\":\"city1,city2,city3,city4,city5,city6,city7,city8,city9,city10\",\"sex\":\"male\",\"keywords\":\"温泉\",\"categoryIds\":\"1\",\"targetPageFlow\":\"1\"}');
 INSERT INTO `task` VALUES ('3', 'product', '2016-10-13', '2016-10-13', '2016-10-13', 'product', '0', '{\"startDate\":\"2016-10-01\",\"endDate\":\"2017-10-01\",\"startAge\":\"20\",\"endAge\":\"30\",\"professionals\":\"professional1\",\"cities\":\"city1,city2,city3,city4,city5,city6,city7,city8,city9,city10\",\"sex\":\"male\",\"keywords\":\"温泉\",\"categoryIds\":\"1\",\"targetPageFlow\":\"1\"}');
 INSERT INTO `task` VALUES ('4', 'page', '2016-10-14', '2016-10-14', '2016-10-14', 'page', '0', '{\"startDate\":\"2016-10-01\",\"endDate\":\"2017-10-01\",\"startAge\":\"20\",\"endAge\":\"30\",\"professionals\":\"professional1\",\"cities\":\"city1,city2,city3,city4,city5,city6,city7,city8,city9,city10\",\"sex\":\"male\",\"keywords\":\"温泉\",\"categoryIds\":\"1\",\"targetPageFlow\":\"1\"}');
