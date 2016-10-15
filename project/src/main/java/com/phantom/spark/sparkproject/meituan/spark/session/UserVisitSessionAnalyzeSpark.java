@@ -91,7 +91,7 @@ public class UserVisitSessionAnalyzeSpark {
 		// 构建Spark上下文
 		SparkConf conf = new SparkConf()
 				.setAppName(Constants.SPARK_APP_NAME_SESSION)
-//				.set("spark.default.parallelism", "100")
+				.set("spark.default.parallelism", "1000")
 				.set("spark.storage.memoryFraction", "0.5")  
 				.set("spark.shuffle.consolidateFiles", "true")
 				.set("spark.shuffle.file.buffer", "64")  
