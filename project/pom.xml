@@ -12,6 +12,7 @@
 
 	<!-- 常量信息 -->
 	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<spark.version>1.6.1</spark.version>
 		<hadoop.version>2.5.0-cdh5.3.6</hadoop.version>
 		<hbase.version>0.98.6-cdh5.3.6</hbase.version>
