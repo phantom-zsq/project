@@ -1,4 +1,4 @@
-package com.phantom.hbase;
+package com.phantom.hbase.client;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.Cell;
