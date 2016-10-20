@@ -114,6 +114,7 @@ public class HBaseClientApp {
 		Get get = new Get(Bytes.toBytes("20160829"));
 		get.addFamily(Bytes.toBytes("f1"));
 
+		//Result只对应一个RowKey，可以对应任意的列簇和列
 		Result result = table.get(get);
 		for (Cell cell : result.rawCells()) {
 			System.out.println(Bytes.toString(CellUtil.cloneRow(cell)));
@@ -163,8 +164,6 @@ public class HBaseClientApp {
 		scan.setStartRow(Bytes.toBytes("20160829"));
 		scan.setStopRow(Bytes.toBytes("20160831"));
 
-		// Bytes.toBytes("")
-
 		// add Column
 		scan.addColumn(Bytes.toBytes("f1"), Bytes.toBytes("name"));
 
@@ -173,10 +172,11 @@ public class HBaseClientApp {
 		scan.setFilter(filter);
 
 		// Cache
-		scan.setCacheBlocks(true);
-		scan.setCaching(2);
-		scan.setBatch(2);
+		scan.setCacheBlocks(false);//是否缓存数据，因为只查询1次，所以不设置缓存
+		scan.setCaching(500);//每次rpc的Result个数，默认为1个
+		scan.setBatch(10);//每次rpc的列的个数
 
+		//多个rowkey行的结果是ResultScanner，单个rowkey行的结果是Result
 		ResultScanner resultScanner = table.getScanner(scan);
 
 		for (Result result : resultScanner) {
