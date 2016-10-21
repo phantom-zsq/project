@@ -1,4 +1,4 @@
-package com.phantom.hbase.mr;
+package com.phantom.hbase.mapreduce;
 
 import java.io.IOException;
 
