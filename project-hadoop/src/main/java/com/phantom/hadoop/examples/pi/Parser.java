@@ -37,156 +37,152 @@ import com.phantom.hadoop.examples.pi.math.Bellard.Parameter;
 
 /** A class for parsing outputs */
 public final class Parser {
-  static final String VERBOSE_PROPERTY = "pi.parser.verbose";
+	static final String VERBOSE_PROPERTY = "pi.parser.verbose";
 
-  final boolean isVerbose;
-  
-  public Parser(boolean isVerbose) {
-    this.isVerbose = isVerbose;
-  }
-  
-  private void println(String s) {
-    if (isVerbose)
-      Util.out.println(s);
-  }
+	final boolean isVerbose;
 
-  /** Parse a line */
-  private static void parseLine(final String line, Map<Parameter, List<TaskResult>> m) {
-//      LOG.info("line = " + line);
-    final Map.Entry<String, TaskResult> e = DistSum.string2TaskResult(line);
-    if (e != null) {
-      final List<TaskResult> sums = m.get(Parameter.get(e.getKey()));
-      if (sums == null)
-        throw new IllegalArgumentException("sums == null, line=" + line + ", e=" + e);
-      sums.add(e.getValue());
-    }
-  }
+	public Parser(boolean isVerbose) {
+		this.isVerbose = isVerbose;
+	}
 
-  /** Parse a file or a directory tree */
-  private void parse(File f, Map<Parameter, List<TaskResult>> sums) throws IOException {
-    if (f.isDirectory()) {
-      println("Process directory " + f);
-      for(File child : f.listFiles())
-        parse(child, sums);
-    } else if (f.getName().endsWith(".txt")) {
-      println("Parse file " + f);
-      final Map<Parameter, List<TaskResult>> m = new TreeMap<Parameter, List<TaskResult>>();    
-      for(Parameter p : Parameter.values())
-        m.put(p, new ArrayList<TaskResult>());
+	private void println(String s) {
+		if (isVerbose)
+			Util.out.println(s);
+	}
 
-      final BufferedReader in = new BufferedReader(
-          new InputStreamReader(new FileInputStream(f), Charsets.UTF_8)); 
-      try {
-        for(String line; (line = in.readLine()) != null; )
-          try {
-            parseLine(line, m);
-          } catch(RuntimeException e) {
-            Util.err.println("line = " + line);
-            throw e;
-          }
-      } finally {
-        in.close();
-      }
+	/** Parse a line */
+	private static void parseLine(final String line, Map<Parameter, List<TaskResult>> m) {
+		// LOG.info("line = " + line);
+		final Map.Entry<String, TaskResult> e = DistSum.string2TaskResult(line);
+		if (e != null) {
+			final List<TaskResult> sums = m.get(Parameter.get(e.getKey()));
+			if (sums == null)
+				throw new IllegalArgumentException("sums == null, line=" + line + ", e=" + e);
+			sums.add(e.getValue());
+		}
+	}
 
-      for(Parameter p : Parameter.values()) {
-        final List<TaskResult> combined = Util.combine(m.get(p));
-        if (!combined.isEmpty()) {
-          println(p + " (size=" + combined.size() + "):");
-          for(TaskResult r : combined)
-            println("  " + r);
-        }
-        sums.get(p).addAll(m.get(p));
-      }
-    }
-  }
+	/** Parse a file or a directory tree */
+	private void parse(File f, Map<Parameter, List<TaskResult>> sums) throws IOException {
+		if (f.isDirectory()) {
+			println("Process directory " + f);
+			for (File child : f.listFiles())
+				parse(child, sums);
+		} else if (f.getName().endsWith(".txt")) {
+			println("Parse file " + f);
+			final Map<Parameter, List<TaskResult>> m = new TreeMap<Parameter, List<TaskResult>>();
+			for (Parameter p : Parameter.values())
+				m.put(p, new ArrayList<TaskResult>());
 
-  /** Parse a path */
-  private Map<Parameter, List<TaskResult>> parse(String f) throws IOException {
-    final Map<Parameter, List<TaskResult>> m = new TreeMap<Parameter, List<TaskResult>>();
-    for(Parameter p : Parameter.values())
-      m.put(p, new ArrayList<TaskResult>());
-    parse(new File(f), m);
+			final BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(f), Charsets.UTF_8));
+			try {
+				for (String line; (line = in.readLine()) != null;)
+					try {
+						parseLine(line, m);
+					} catch (RuntimeException e) {
+						Util.err.println("line = " + line);
+						throw e;
+					}
+			} finally {
+				in.close();
+			}
 
-    //LOG.info("m=" + m.toString().replace(", ", ",\n  "));
-    for(Parameter p : Parameter.values())
-      m.put(p, m.get(p));
-    return m;
-  }
+			for (Parameter p : Parameter.values()) {
+				final List<TaskResult> combined = Util.combine(m.get(p));
+				if (!combined.isEmpty()) {
+					println(p + " (size=" + combined.size() + "):");
+					for (TaskResult r : combined)
+						println("  " + r);
+				}
+				sums.get(p).addAll(m.get(p));
+			}
+		}
+	}
 
-  /** Parse input and re-write results. */
-  Map<Parameter, List<TaskResult>> parse(String inputpath, String outputdir
-      ) throws IOException {
-    //parse input
-    Util.out.print("\nParsing " + inputpath + " ... ");
-    Util.out.flush();
-    final Map<Parameter, List<TaskResult>> parsed = parse(inputpath);
-    Util.out.println("DONE");
+	/** Parse a path */
+	private Map<Parameter, List<TaskResult>> parse(String f) throws IOException {
+		final Map<Parameter, List<TaskResult>> m = new TreeMap<Parameter, List<TaskResult>>();
+		for (Parameter p : Parameter.values())
+			m.put(p, new ArrayList<TaskResult>());
+		parse(new File(f), m);
 
-    //re-write the results
-    if (outputdir != null) {
-      Util.out.print("\nWriting to " + outputdir + " ...");
-      Util.out.flush();
-      for(Parameter p : Parameter.values()) {
-        final List<TaskResult> results = parsed.get(p);
-        Collections.sort(results);
+		// LOG.info("m=" + m.toString().replace(", ", ",\n "));
+		for (Parameter p : Parameter.values())
+			m.put(p, m.get(p));
+		return m;
+	}
 
-        final PrintWriter out = new PrintWriter(
-            new OutputStreamWriter(new FileOutputStream(
-                new File(outputdir, p + ".txt")), Charsets.UTF_8), true);
-        try {
-          for(int i = 0; i < results.size(); i++)
-            out.println(DistSum.taskResult2string(p + "." + i, results.get(i)));
-        }
-        finally {
-          out.close();
-        }
-      }
-      Util.out.println("DONE");
-    }
-    return parsed;
-  }
+	/** Parse input and re-write results. */
+	Map<Parameter, List<TaskResult>> parse(String inputpath, String outputdir) throws IOException {
+		// parse input
+		Util.out.print("\nParsing " + inputpath + " ... ");
+		Util.out.flush();
+		final Map<Parameter, List<TaskResult>> parsed = parse(inputpath);
+		Util.out.println("DONE");
 
-  /** Combine results */
-  static <T extends Combinable<T>> Map<Parameter, T> combine(Map<Parameter, List<T>> m) {
-    final Map<Parameter, T> combined = new TreeMap<Parameter, T>();
-    for(Parameter p : Parameter.values()) {
-      final List<T> results = Util.combine(m.get(p));
-      Util.out.format("%-6s => ", p); 
-      if (results == null)
-        Util.out.println("null");
-      else if (results.size() != 1) 
-        Util.out.println(results.toString().replace(", ", ",\n           "));
-      else {
-        final T r = results.get(0);
-        combined.put(p, r); 
-        Util.out.println(r);
-      }
-    }
-    return combined;
-  }
+		// re-write the results
+		if (outputdir != null) {
+			Util.out.print("\nWriting to " + outputdir + " ...");
+			Util.out.flush();
+			for (Parameter p : Parameter.values()) {
+				final List<TaskResult> results = parsed.get(p);
+				Collections.sort(results);
 
-  /** main */
-  public static void main(String[] args) throws IOException {
-    if (args.length < 2 || args.length > 3)
-      Util.printUsage(args, Parser.class.getName()
-          + " <b> <inputpath> [<outputdir>]");
+				final PrintWriter out = new PrintWriter(
+						new OutputStreamWriter(new FileOutputStream(new File(outputdir, p + ".txt")), Charsets.UTF_8),
+						true);
+				try {
+					for (int i = 0; i < results.size(); i++)
+						out.println(DistSum.taskResult2string(p + "." + i, results.get(i)));
+				} finally {
+					out.close();
+				}
+			}
+			Util.out.println("DONE");
+		}
+		return parsed;
+	}
 
-    int i = 0;
-    final long b = Util.string2long(args[i++]);
-    final String inputpath = args[i++];
-    final String outputdir = args.length >= 3? args[i++]: null;
+	/** Combine results */
+	static <T extends Combinable<T>> Map<Parameter, T> combine(Map<Parameter, List<T>> m) {
+		final Map<Parameter, T> combined = new TreeMap<Parameter, T>();
+		for (Parameter p : Parameter.values()) {
+			final List<T> results = Util.combine(m.get(p));
+			Util.out.format("%-6s => ", p);
+			if (results == null)
+				Util.out.println("null");
+			else if (results.size() != 1)
+				Util.out.println(results.toString().replace(", ", ",\n           "));
+			else {
+				final T r = results.get(0);
+				combined.put(p, r);
+				Util.out.println(r);
+			}
+		}
+		return combined;
+	}
 
-    //read input
-    final Map<Parameter, List<TaskResult>> parsed = new Parser(true).parse(inputpath, outputdir);
-    final Map<Parameter, TaskResult> combined = combine(parsed);
-    long duration = 0;
-    for(TaskResult r : combined.values())
-      duration += r.getDuration();
+	/** main */
+	public static void main(String[] args) throws IOException {
+		if (args.length < 2 || args.length > 3)
+			Util.printUsage(args, Parser.class.getName() + " <b> <inputpath> [<outputdir>]");
 
-    //print pi
-    final double pi = Bellard.computePi(b, combined);
-    Util.printBitSkipped(b);
-    Util.out.println(Util.pi2string(pi, Bellard.bit2terms(b)));
-    Util.out.println("cpu time = " + Util.millis2String(duration));
-  }
+		int i = 0;
+		final long b = Util.string2long(args[i++]);
+		final String inputpath = args[i++];
+		final String outputdir = args.length >= 3 ? args[i++] : null;
+
+		// read input
+		final Map<Parameter, List<TaskResult>> parsed = new Parser(true).parse(inputpath, outputdir);
+		final Map<Parameter, TaskResult> combined = combine(parsed);
+		long duration = 0;
+		for (TaskResult r : combined.values())
+			duration += r.getDuration();
+
+		// print pi
+		final double pi = Bellard.computePi(b, combined);
+		Util.printBitSkipped(b);
+		Util.out.println(Util.pi2string(pi, Bellard.bit2terms(b)));
+		Util.out.println("cpu time = " + Util.millis2String(duration));
+	}
 }

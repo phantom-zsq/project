@@ -19,13 +19,17 @@ package com.phantom.hadoop.examples.pi;
 
 /**
  * A class is Combinable if its object can be combined with other objects.
- * @param <T> The generic type
+ * 
+ * @param <T>
+ *            The generic type
  */
 public interface Combinable<T> extends Comparable<T> {
-  /**
-   * Combine this with that. 
-   * @param that Another object.
-   * @return The combined object.
-   */
-  public T combine(T that); 
+	/**
+	 * Combine this with that.
+	 * 
+	 * @param that
+	 *            Another object.
+	 * @return The combined object.
+	 */
+	public T combine(T that);
 }

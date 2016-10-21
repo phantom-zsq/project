@@ -29,109 +29,113 @@ import com.phantom.hadoop.examples.pi.math.Summation;
 
 /** A Writable class for Summation */
 public final class SummationWritable implements WritableComparable<SummationWritable>, Container<Summation> {
-  private Summation sigma;
+	private Summation sigma;
 
-  public SummationWritable() {}
-  
-  SummationWritable(Summation sigma) {this.sigma = sigma;}
+	public SummationWritable() {
+	}
 
-  /** {@inheritDoc} */
-  @Override
-  public String toString() {return getClass().getSimpleName() + sigma;}
+	SummationWritable(Summation sigma) {
+		this.sigma = sigma;
+	}
 
-  /** {@inheritDoc} */
-  @Override
-  public Summation getElement() {return sigma;}
+	/** {@inheritDoc} */
+	@Override
+	public String toString() {
+		return getClass().getSimpleName() + sigma;
+	}
 
-  /** Read sigma from conf */
-  public static Summation read(Class<?> clazz, Configuration conf) {
-    return Summation.valueOf(conf.get(clazz.getSimpleName() + ".sigma")); 
-  }
+	/** {@inheritDoc} */
+	@Override
+	public Summation getElement() {
+		return sigma;
+	}
 
-  /** Write sigma to conf */
-  public static void write(Summation sigma, Class<?> clazz, Configuration conf) {
-    conf.set(clazz.getSimpleName() + ".sigma", sigma.toString());
-  }
+	/** Read sigma from conf */
+	public static Summation read(Class<?> clazz, Configuration conf) {
+		return Summation.valueOf(conf.get(clazz.getSimpleName() + ".sigma"));
+	}
 
-  /** Read Summation from DataInput */
-  static Summation read(DataInput in) throws IOException {
-    final SummationWritable s = new SummationWritable();
-    s.readFields(in);
-    return s.getElement();
-  }
+	/** Write sigma to conf */
+	public static void write(Summation sigma, Class<?> clazz, Configuration conf) {
+		conf.set(clazz.getSimpleName() + ".sigma", sigma.toString());
+	}
 
-  /** {@inheritDoc} */
-  @Override
-  public void readFields(DataInput in) throws IOException {
-    final ArithmeticProgression N = ArithmeticProgressionWritable.read(in);
-    final ArithmeticProgression E = ArithmeticProgressionWritable.read(in);
-    sigma = new Summation(N, E); 
+	/** Read Summation from DataInput */
+	static Summation read(DataInput in) throws IOException {
+		final SummationWritable s = new SummationWritable();
+		s.readFields(in);
+		return s.getElement();
+	}
 
-    if (in.readBoolean()) {
-      sigma.setValue(in.readDouble());
-    }
-  }
+	/** {@inheritDoc} */
+	@Override
+	public void readFields(DataInput in) throws IOException {
+		final ArithmeticProgression N = ArithmeticProgressionWritable.read(in);
+		final ArithmeticProgression E = ArithmeticProgressionWritable.read(in);
+		sigma = new Summation(N, E);
 
-  /** Write sigma to DataOutput */
-  public static void write(Summation sigma, DataOutput out) throws IOException {
-    ArithmeticProgressionWritable.write(sigma.N, out);
-    ArithmeticProgressionWritable.write(sigma.E, out);
+		if (in.readBoolean()) {
+			sigma.setValue(in.readDouble());
+		}
+	}
 
-    final Double v = sigma.getValue();
-    if (v == null)
-      out.writeBoolean(false);
-    else {
-      out.writeBoolean(true);
-      out.writeDouble(v);
-    }
-  }
+	/** Write sigma to DataOutput */
+	public static void write(Summation sigma, DataOutput out) throws IOException {
+		ArithmeticProgressionWritable.write(sigma.N, out);
+		ArithmeticProgressionWritable.write(sigma.E, out);
 
-  /** {@inheritDoc} */
-  @Override
-  public void write(DataOutput out) throws IOException {
-    write(sigma, out);
-  }
+		final Double v = sigma.getValue();
+		if (v == null)
+			out.writeBoolean(false);
+		else {
+			out.writeBoolean(true);
+			out.writeDouble(v);
+		}
+	}
 
-  /** {@inheritDoc} */
-  @Override
-  public int compareTo(SummationWritable that) {
-    return this.sigma.compareTo(that.sigma);
-  }
+	/** {@inheritDoc} */
+	@Override
+	public void write(DataOutput out) throws IOException {
+		write(sigma, out);
+	}
 
-  /** {@inheritDoc} */
-  @Override
-  public boolean equals(Object obj) {
-    if (this == obj)
-      return true;
-    else if (obj != null && obj instanceof SummationWritable) {
-      final SummationWritable that = (SummationWritable)obj;
-      return this.compareTo(that) == 0;
-    }
-    throw new IllegalArgumentException(obj == null? "obj == null":
-      "obj.getClass()=" + obj.getClass());
-  }
+	/** {@inheritDoc} */
+	@Override
+	public int compareTo(SummationWritable that) {
+		return this.sigma.compareTo(that.sigma);
+	}
 
-  /** Not supported */
-  @Override
-  public int hashCode() {
-    throw new UnsupportedOperationException();
-  }
+	/** {@inheritDoc} */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		else if (obj != null && obj instanceof SummationWritable) {
+			final SummationWritable that = (SummationWritable) obj;
+			return this.compareTo(that) == 0;
+		}
+		throw new IllegalArgumentException(obj == null ? "obj == null" : "obj.getClass()=" + obj.getClass());
+	}
 
-  /** A writable class for ArithmeticProgression */
-  private static class ArithmeticProgressionWritable {
-    /** Read ArithmeticProgression from DataInput */
-    private static ArithmeticProgression read(DataInput in) throws IOException {
-      return new ArithmeticProgression(in.readChar(),
-          in.readLong(), in.readLong(), in.readLong());
-    }
+	/** Not supported */
+	@Override
+	public int hashCode() {
+		throw new UnsupportedOperationException();
+	}
 
-    /** Write ArithmeticProgression to DataOutput */
-    private static void write(ArithmeticProgression ap, DataOutput out
-        ) throws IOException {
-      out.writeChar(ap.symbol);
-      out.writeLong(ap.value);
-      out.writeLong(ap.delta);
-      out.writeLong(ap.limit);
-    }
-  }
+	/** A writable class for ArithmeticProgression */
+	private static class ArithmeticProgressionWritable {
+		/** Read ArithmeticProgression from DataInput */
+		private static ArithmeticProgression read(DataInput in) throws IOException {
+			return new ArithmeticProgression(in.readChar(), in.readLong(), in.readLong(), in.readLong());
+		}
+
+		/** Write ArithmeticProgression to DataOutput */
+		private static void write(ArithmeticProgression ap, DataOutput out) throws IOException {
+			out.writeChar(ap.symbol);
+			out.writeLong(ap.value);
+			out.writeLong(ap.delta);
+			out.writeLong(ap.limit);
+		}
+	}
 }

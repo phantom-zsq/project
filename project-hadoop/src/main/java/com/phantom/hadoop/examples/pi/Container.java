@@ -18,12 +18,14 @@
 package com.phantom.hadoop.examples.pi;
 
 /**
- * A class is a Container if it contains an element. 
- * @param <T> The generic type
+ * A class is a Container if it contains an element.
+ * 
+ * @param <T>
+ *            The generic type
  */
 public interface Container<T> {
-  /**
-   * @return The contained element.
-   */
-  public T getElement(); 
+	/**
+	 * @return The contained element.
+	 */
+	public T getElement();
 }

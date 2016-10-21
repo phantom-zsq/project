@@ -17,62 +17,65 @@
  */
 package com.phantom.hadoop.examples.pi.math;
 
-/** Montgomery method.
+/**
+ * Montgomery method.
  * 
  * References:
  * 
- * [1] Richard Crandall and Carl Pomerance.  Prime Numbers: A Computational 
- *     Perspective.  Springer-Verlag, 2001. 
+ * [1] Richard Crandall and Carl Pomerance. Prime Numbers: A Computational
+ * Perspective. Springer-Verlag, 2001.
  * 
- * [2] Peter Montgomery.  Modular multiplication without trial division.
- *     Math. Comp., 44:519-521, 1985.
+ * [2] Peter Montgomery. Modular multiplication without trial division. Math.
+ * Comp., 44:519-521, 1985.
  */
 class Montgomery {
-  protected final Product product = new Product();
+	protected final Product product = new Product();
 
-  protected long N;
-  protected long N_I;  // N'
-  protected long R;
-  protected long R_1;  // R - 1
-  protected int s;
+	protected long N;
+	protected long N_I; // N'
+	protected long R;
+	protected long R_1; // R - 1
+	protected int s;
 
-  /** Set the modular and initialize this object. */
-  Montgomery set(long n) {
-    if (n % 2 != 1)
-      throw new IllegalArgumentException("n % 2 != 1, n=" + n);
-    N = n;
-    R = Long.highestOneBit(n) << 1;
-    N_I = R - Modular.modInverse(N, R);
-    R_1 = R - 1;
-    s = Long.numberOfTrailingZeros(R);
-    return this;
-  }
+	/** Set the modular and initialize this object. */
+	Montgomery set(long n) {
+		if (n % 2 != 1)
+			throw new IllegalArgumentException("n % 2 != 1, n=" + n);
+		N = n;
+		R = Long.highestOneBit(n) << 1;
+		N_I = R - Modular.modInverse(N, R);
+		R_1 = R - 1;
+		s = Long.numberOfTrailingZeros(R);
+		return this;
+	}
 
-  /** Compute 2^y mod N for N odd. */
-  long mod(final long y) {
-    long p = R - N; 
-    long x = p << 1;
-    if (x >= N) x -= N;
-    
-    for(long mask = Long.highestOneBit(y); mask > 0; mask >>>= 1) {
-      p = product.m(p, p);
-      if ((mask & y) != 0) p = product.m(p, x);
-    }
-    return product.m(p, 1);
-  }
+	/** Compute 2^y mod N for N odd. */
+	long mod(final long y) {
+		long p = R - N;
+		long x = p << 1;
+		if (x >= N)
+			x -= N;
 
-  class Product {
-    private final LongLong x = new LongLong();
-    private final LongLong xN_I = new LongLong();
-    private final LongLong aN = new LongLong();
+		for (long mask = Long.highestOneBit(y); mask > 0; mask >>>= 1) {
+			p = product.m(p, p);
+			if ((mask & y) != 0)
+				p = product.m(p, x);
+		}
+		return product.m(p, 1);
+	}
 
-    long m(final long c, final long d) {
-      LongLong.multiplication(x, c, d);
-      // a = (x * N')&(R - 1) = ((x & R_1) * N') & R_1
-      final long a = LongLong.multiplication(xN_I, x.and(R_1), N_I).and(R_1);
-      LongLong.multiplication(aN, a, N);
-      final long z = aN.plusEqual(x).shiftRight(s);
-      return z < N? z: z - N;      
-    }
-  }
+	class Product {
+		private final LongLong x = new LongLong();
+		private final LongLong xN_I = new LongLong();
+		private final LongLong aN = new LongLong();
+
+		long m(final long c, final long d) {
+			LongLong.multiplication(x, c, d);
+			// a = (x * N')&(R - 1) = ((x & R_1) * N') & R_1
+			final long a = LongLong.multiplication(xN_I, x.and(R_1), N_I).and(R_1);
+			LongLong.multiplication(aN, a, N);
+			final long z = aN.plusEqual(x).shiftRight(s);
+			return z < N ? z : z - N;
+		}
+	}
 }

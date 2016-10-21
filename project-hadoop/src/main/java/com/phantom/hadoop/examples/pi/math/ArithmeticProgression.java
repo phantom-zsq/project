@@ -21,106 +21,99 @@ import com.phantom.hadoop.examples.pi.Util;
 
 /** An arithmetic progression */
 public class ArithmeticProgression implements Comparable<ArithmeticProgression> {
-  /** A symbol */
-  public final char symbol;
-  /** Starting value */
-  public final long value;
-  /** Difference between terms */
-  public final long delta;
-  /** Ending value */
-  public final long limit;
+	/** A symbol */
+	public final char symbol;
+	/** Starting value */
+	public final long value;
+	/** Difference between terms */
+	public final long delta;
+	/** Ending value */
+	public final long limit;
 
-  /** Constructor */
-  public ArithmeticProgression(char symbol, long value, long delta, long limit) {
-    if (delta == 0)
-      throw new IllegalArgumentException("delta == 0");
+	/** Constructor */
+	public ArithmeticProgression(char symbol, long value, long delta, long limit) {
+		if (delta == 0)
+			throw new IllegalArgumentException("delta == 0");
 
-    this.symbol = symbol;
-    this.value = value;
-    this.delta = delta;
-    this.limit = limit;
-  }
+		this.symbol = symbol;
+		this.value = value;
+		this.delta = delta;
+		this.limit = limit;
+	}
 
-  /** {@inheritDoc} */
-  @Override
-  public boolean equals(Object obj) {
-    if (this == obj)
-      return true;
-    else if (obj != null && obj instanceof ArithmeticProgression) {
-      final ArithmeticProgression that = (ArithmeticProgression)obj;
-      if (this.symbol != that.symbol)
-        throw new IllegalArgumentException("this.symbol != that.symbol, this="
-            + this + ", that=" + that);
-      return this.value == that.value
-          && this.delta == that.delta
-          && this.limit == that.limit;
-    }
-    throw new IllegalArgumentException(obj == null? "obj == null":
-      "obj.getClass()=" + obj.getClass());
-  }
+	/** {@inheritDoc} */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		else if (obj != null && obj instanceof ArithmeticProgression) {
+			final ArithmeticProgression that = (ArithmeticProgression) obj;
+			if (this.symbol != that.symbol)
+				throw new IllegalArgumentException("this.symbol != that.symbol, this=" + this + ", that=" + that);
+			return this.value == that.value && this.delta == that.delta && this.limit == that.limit;
+		}
+		throw new IllegalArgumentException(obj == null ? "obj == null" : "obj.getClass()=" + obj.getClass());
+	}
 
-  /** Not supported */
-  public int hashCode() {
-    throw new UnsupportedOperationException();
-  }
+	/** Not supported */
+	public int hashCode() {
+		throw new UnsupportedOperationException();
+	}
 
-  /** {@inheritDoc} */
-  @Override
-  public int compareTo(ArithmeticProgression that) {
-    if (this.symbol != that.symbol)
-      throw new IllegalArgumentException("this.symbol != that.symbol, this="
-          + this + ", that=" + that);
-    if (this.delta != that.delta)
-      throw new IllegalArgumentException("this.delta != that.delta, this="
-          + this + ", that=" + that);
-    final long d = this.limit - that.limit;
-    return d > 0? 1: d == 0? 0: -1;
-  }
+	/** {@inheritDoc} */
+	@Override
+	public int compareTo(ArithmeticProgression that) {
+		if (this.symbol != that.symbol)
+			throw new IllegalArgumentException("this.symbol != that.symbol, this=" + this + ", that=" + that);
+		if (this.delta != that.delta)
+			throw new IllegalArgumentException("this.delta != that.delta, this=" + this + ", that=" + that);
+		final long d = this.limit - that.limit;
+		return d > 0 ? 1 : d == 0 ? 0 : -1;
+	}
 
-  /** Does this contain that? */
-  boolean contains(ArithmeticProgression that) {
-    if (this.symbol != that.symbol)
-      throw new IllegalArgumentException("this.symbol != that.symbol, this="
-          + this + ", that=" + that);
-    if (this.delta == that.delta) {
-      if (this.value == that.value)
-        return this.getSteps() >= that.getSteps();
-      else if (this.delta < 0)
-        return this.value > that.value && this.limit <= that.limit;
-      else if (this.delta > 0)
-        return this.value < that.value && this.limit >= that.limit;
-    }
-    return false;    
-  }
+	/** Does this contain that? */
+	boolean contains(ArithmeticProgression that) {
+		if (this.symbol != that.symbol)
+			throw new IllegalArgumentException("this.symbol != that.symbol, this=" + this + ", that=" + that);
+		if (this.delta == that.delta) {
+			if (this.value == that.value)
+				return this.getSteps() >= that.getSteps();
+			else if (this.delta < 0)
+				return this.value > that.value && this.limit <= that.limit;
+			else if (this.delta > 0)
+				return this.value < that.value && this.limit >= that.limit;
+		}
+		return false;
+	}
 
-  /** Skip some steps */
-  long skip(long steps) {
-    if (steps < 0)
-      throw new IllegalArgumentException("steps < 0, steps=" + steps);
-    return value + steps*delta; 
-  }
+	/** Skip some steps */
+	long skip(long steps) {
+		if (steps < 0)
+			throw new IllegalArgumentException("steps < 0, steps=" + steps);
+		return value + steps * delta;
+	}
 
-  /** Get the number of steps */
-  public long getSteps() {
-    return (limit - value)/delta;
-  }
+	/** Get the number of steps */
+	public long getSteps() {
+		return (limit - value) / delta;
+	}
 
-  /** {@inheritDoc} */
-  @Override
-  public String toString() {
-    return symbol + ":value=" + value + ",delta=" + delta + ",limit=" + limit;
-  }
+	/** {@inheritDoc} */
+	@Override
+	public String toString() {
+		return symbol + ":value=" + value + ",delta=" + delta + ",limit=" + limit;
+	}
 
-  /** Convert a String to an ArithmeticProgression. */
-  static ArithmeticProgression valueOf(final String s) {
-    int i = 2;
-    int j = s.indexOf(",delta=");
-    final long value = Util.parseLongVariable("value", s.substring(2, j));
-    i = j + 1;
-    j = s.indexOf(",limit=");
-    final long delta = Util.parseLongVariable("delta", s.substring(i, j));
-    i = j + 1;
-    final long limit = Util.parseLongVariable("limit", s.substring(i));
-    return new ArithmeticProgression(s.charAt(0), value, delta, limit);
-  }
+	/** Convert a String to an ArithmeticProgression. */
+	static ArithmeticProgression valueOf(final String s) {
+		int i = 2;
+		int j = s.indexOf(",delta=");
+		final long value = Util.parseLongVariable("value", s.substring(2, j));
+		i = j + 1;
+		j = s.indexOf(",limit=");
+		final long delta = Util.parseLongVariable("delta", s.substring(i, j));
+		i = j + 1;
+		final long limit = Util.parseLongVariable("limit", s.substring(i));
+		return new ArithmeticProgression(s.charAt(0), value, delta, limit);
+	}
 }

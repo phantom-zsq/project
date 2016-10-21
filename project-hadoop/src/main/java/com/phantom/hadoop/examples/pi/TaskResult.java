@@ -27,89 +27,93 @@ import com.phantom.hadoop.examples.pi.math.Summation;
 
 /** A class for map task results or reduce task results. */
 public class TaskResult implements Container<Summation>, Combinable<TaskResult>, Writable {
-  private Summation sigma;
-  private long duration;
+	private Summation sigma;
+	private long duration;
 
-  public TaskResult() {}
+	public TaskResult() {
+	}
 
-  TaskResult(Summation sigma, long duration) {
-    this.sigma = sigma;
-    this.duration = duration;      
-  }
+	TaskResult(Summation sigma, long duration) {
+		this.sigma = sigma;
+		this.duration = duration;
+	}
 
-  /** {@inheritDoc} */
-  @Override
-  public Summation getElement() {return sigma;}
+	/** {@inheritDoc} */
+	@Override
+	public Summation getElement() {
+		return sigma;
+	}
 
-  /** @return The time duration used */
-  long getDuration() {return duration;}
+	/** @return The time duration used */
+	long getDuration() {
+		return duration;
+	}
 
-  /** {@inheritDoc} */
-  @Override
-  public int compareTo(TaskResult that) {
-    return this.sigma.compareTo(that.sigma);
-  }
+	/** {@inheritDoc} */
+	@Override
+	public int compareTo(TaskResult that) {
+		return this.sigma.compareTo(that.sigma);
+	}
 
-  /** {@inheritDoc} */
-  @Override
-  public boolean equals(Object obj) {
-    if (this == obj)
-      return true;
-    else if (obj != null && obj instanceof TaskResult) {
-      final TaskResult that = (TaskResult)obj;
-      return this.compareTo(that) == 0;
-    }
-    throw new IllegalArgumentException(obj == null? "obj == null":
-      "obj.getClass()=" + obj.getClass());
-  }
+	/** {@inheritDoc} */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		else if (obj != null && obj instanceof TaskResult) {
+			final TaskResult that = (TaskResult) obj;
+			return this.compareTo(that) == 0;
+		}
+		throw new IllegalArgumentException(obj == null ? "obj == null" : "obj.getClass()=" + obj.getClass());
+	}
 
-  /** Not supported */
-  @Override
-  public int hashCode() {
-    throw new UnsupportedOperationException();
-  }
+	/** Not supported */
+	@Override
+	public int hashCode() {
+		throw new UnsupportedOperationException();
+	}
 
-  /** {@inheritDoc} */
-  @Override
-  public TaskResult combine(TaskResult that) {
-    final Summation s = sigma.combine(that.sigma);
-    return s == null? null: new TaskResult(s, this.duration + that.duration);
-  }
+	/** {@inheritDoc} */
+	@Override
+	public TaskResult combine(TaskResult that) {
+		final Summation s = sigma.combine(that.sigma);
+		return s == null ? null : new TaskResult(s, this.duration + that.duration);
+	}
 
-  /** {@inheritDoc} */
-  @Override
-  public void readFields(DataInput in) throws IOException {
-    sigma = SummationWritable.read(in);
-    duration = in.readLong();
-  }
+	/** {@inheritDoc} */
+	@Override
+	public void readFields(DataInput in) throws IOException {
+		sigma = SummationWritable.read(in);
+		duration = in.readLong();
+	}
 
-  /** {@inheritDoc} */
-  @Override
-  public void write(DataOutput out) throws IOException {
-    SummationWritable.write(sigma, out);
-    out.writeLong(duration);
-  }
-  
-  /** {@inheritDoc} */
-  @Override
-  public String toString() {
-    return "sigma=" + sigma + ", duration=" + duration + "(" + Util.millis2String(duration) + ")";
-  }
+	/** {@inheritDoc} */
+	@Override
+	public void write(DataOutput out) throws IOException {
+		SummationWritable.write(sigma, out);
+		out.writeLong(duration);
+	}
 
-  /** Covert a String to a TaskResult */
-  public static TaskResult valueOf(String s) {
-    int i = 0;
-    int j = s.indexOf(", duration=");
-    if (j < 0)
-      throw new IllegalArgumentException("i=" + i + ", j=" + j + " < 0, s=" + s);
-    final Summation sigma = Summation.valueOf(Util.parseStringVariable("sigma", s.substring(i, j)));
+	/** {@inheritDoc} */
+	@Override
+	public String toString() {
+		return "sigma=" + sigma + ", duration=" + duration + "(" + Util.millis2String(duration) + ")";
+	}
 
-    i = j + 2;
-    j = s.indexOf("(", i);
-    if (j < 0)
-      throw new IllegalArgumentException("i=" + i + ", j=" + j + " < 0, s=" + s);
-    final long duration = Util.parseLongVariable("duration", s.substring(i, j));
+	/** Covert a String to a TaskResult */
+	public static TaskResult valueOf(String s) {
+		int i = 0;
+		int j = s.indexOf(", duration=");
+		if (j < 0)
+			throw new IllegalArgumentException("i=" + i + ", j=" + j + " < 0, s=" + s);
+		final Summation sigma = Summation.valueOf(Util.parseStringVariable("sigma", s.substring(i, j)));
 
-    return new TaskResult(sigma, duration);
-  }
+		i = j + 2;
+		j = s.indexOf("(", i);
+		if (j < 0)
+			throw new IllegalArgumentException("i=" + i + ", j=" + j + " < 0, s=" + s);
+		final long duration = Util.parseLongVariable("duration", s.substring(i, j));
+
+		return new TaskResult(sigma, duration);
+	}
 }

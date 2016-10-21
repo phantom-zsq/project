@@ -38,68 +38,66 @@ import org.apache.hadoop.util.ToolRunner;
 
 /* Extracts matching regexs from input files and counts them. */
 public class Grep extends Configured implements Tool {
-  private Grep() {}                               // singleton
+	private Grep() {
+	} // singleton
 
-  public int run(String[] args) throws Exception {
-    if (args.length < 3) {
-      System.out.println("Grep <inDir> <outDir> <regex> [<group>]");
-      ToolRunner.printGenericCommandUsage(System.out);
-      return 2;
-    }
+	public int run(String[] args) throws Exception {
+		if (args.length < 3) {
+			System.out.println("Grep <inDir> <outDir> <regex> [<group>]");
+			ToolRunner.printGenericCommandUsage(System.out);
+			return 2;
+		}
 
-    Path tempDir =
-      new Path("grep-temp-"+
-          Integer.toString(new Random().nextInt(Integer.MAX_VALUE)));
+		Path tempDir = new Path("grep-temp-" + Integer.toString(new Random().nextInt(Integer.MAX_VALUE)));
 
-    Configuration conf = getConf();
-    conf.set(RegexMapper.PATTERN, args[2]);
-    if (args.length == 4)
-      conf.set(RegexMapper.GROUP, args[3]);
+		Configuration conf = getConf();
+		conf.set(RegexMapper.PATTERN, args[2]);
+		if (args.length == 4)
+			conf.set(RegexMapper.GROUP, args[3]);
 
-    Job grepJob = new Job(conf);
-    
-    try {
-      
-      grepJob.setJobName("grep-search");
+		Job grepJob = new Job(conf);
 
-      FileInputFormat.setInputPaths(grepJob, args[0]);
+		try {
 
-      grepJob.setMapperClass(RegexMapper.class);
+			grepJob.setJobName("grep-search");
 
-      grepJob.setCombinerClass(LongSumReducer.class);
-      grepJob.setReducerClass(LongSumReducer.class);
+			FileInputFormat.setInputPaths(grepJob, args[0]);
 
-      FileOutputFormat.setOutputPath(grepJob, tempDir);
-      grepJob.setOutputFormatClass(SequenceFileOutputFormat.class);
-      grepJob.setOutputKeyClass(Text.class);
-      grepJob.setOutputValueClass(LongWritable.class);
+			grepJob.setMapperClass(RegexMapper.class);
 
-      grepJob.waitForCompletion(true);
+			grepJob.setCombinerClass(LongSumReducer.class);
+			grepJob.setReducerClass(LongSumReducer.class);
 
-      Job sortJob = new Job(conf);
-      sortJob.setJobName("grep-sort");
+			FileOutputFormat.setOutputPath(grepJob, tempDir);
+			grepJob.setOutputFormatClass(SequenceFileOutputFormat.class);
+			grepJob.setOutputKeyClass(Text.class);
+			grepJob.setOutputValueClass(LongWritable.class);
 
-      FileInputFormat.setInputPaths(sortJob, tempDir);
-      sortJob.setInputFormatClass(SequenceFileInputFormat.class);
+			grepJob.waitForCompletion(true);
 
-      sortJob.setMapperClass(InverseMapper.class);
+			Job sortJob = new Job(conf);
+			sortJob.setJobName("grep-sort");
 
-      sortJob.setNumReduceTasks(1);                 // write a single file
-      FileOutputFormat.setOutputPath(sortJob, new Path(args[1]));
-      sortJob.setSortComparatorClass(          // sort by decreasing freq
-        LongWritable.DecreasingComparator.class);
+			FileInputFormat.setInputPaths(sortJob, tempDir);
+			sortJob.setInputFormatClass(SequenceFileInputFormat.class);
 
-      sortJob.waitForCompletion(true);
-    }
-    finally {
-      FileSystem.get(conf).delete(tempDir, true);
-    }
-    return 0;
-  }
+			sortJob.setMapperClass(InverseMapper.class);
 
-  public static void main(String[] args) throws Exception {
-    int res = ToolRunner.run(new Configuration(), new Grep(), args);
-    System.exit(res);
-  }
+			sortJob.setNumReduceTasks(1); // write a single file
+			FileOutputFormat.setOutputPath(sortJob, new Path(args[1]));
+			sortJob.setSortComparatorClass( // sort by decreasing freq
+					LongWritable.DecreasingComparator.class);
+
+			sortJob.waitForCompletion(true);
+		} finally {
+			FileSystem.get(conf).delete(tempDir, true);
+		}
+		return 0;
+	}
+
+	public static void main(String[] args) throws Exception {
+		int res = ToolRunner.run(new Configuration(), new Grep(), args);
+		System.exit(res);
+	}
 
 }
