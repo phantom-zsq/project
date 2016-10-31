@@ -854,7 +854,7 @@ public class AdClickRealTimeStatSpark {
 										+ "ROW_NUMBER() OVER(PARTITION BY province ORDER BY click_count DESC) rank "
 									+ "FROM tmp_daily_ad_click_count_by_prov "
 								+ ") t "
-								+ "WHERE rank>=3"
+								+ "WHERE rank<=3"
 						);  
 						
 						return provinceTop3AdDF.javaRDD();
