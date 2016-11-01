@@ -14,8 +14,10 @@ import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
 
 /**
- * WordCountMapper -> WordCountReducer -> WordCountMapper -> WordCountReducer
- * WordCountMapper -> WordCountReducer 依赖关系组合式编程
+ * WordCountMapper -> WordCountReducer
+ * 									 -> WordCountMapper -> WordCountReducer
+ * WordCountMapper -> WordCountReducer 
+ * 依赖关系组合式编程
  * 
  * @author 张少奇
  * @time 2016年10月21日 下午3:32:21
