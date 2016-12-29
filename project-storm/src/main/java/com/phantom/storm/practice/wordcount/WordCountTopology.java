@@ -2,7 +2,6 @@ package com.phantom.storm.practice.wordcount;
 
 import backtype.storm.Config;
 import backtype.storm.LocalCluster;
-import backtype.storm.generated.DistributedRPC.execute_args;
 import backtype.storm.topology.TopologyBuilder;
 import backtype.storm.tuple.Fields;
 
@@ -30,8 +29,8 @@ public class WordCountTopology {
 		Config config = new Config();
 		LocalCluster cluster = new LocalCluster();
 		cluster.submitTopology(TOPOLOGY_NAME, config, builder.createTopology());
-		Thread.sleep(100);
-//		cluster.killTopology(TOPOLOGY_NAME);
-//		cluster.shutdown();
+		Thread.sleep(10000);
+		cluster.killTopology(TOPOLOGY_NAME);
+		cluster.shutdown();
 	}
 }
