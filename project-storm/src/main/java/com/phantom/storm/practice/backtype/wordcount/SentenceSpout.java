@@ -1,4 +1,4 @@
-package com.phantom.storm.practice.wordcount;
+package com.phantom.storm.practice.backtype.wordcount;
 
 import java.util.Map;
 

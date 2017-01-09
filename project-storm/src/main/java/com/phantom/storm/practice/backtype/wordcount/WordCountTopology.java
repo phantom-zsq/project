@@ -1,4 +1,4 @@
-package com.phantom.storm.practice.wordcount;
+package com.phantom.storm.practice.backtype.wordcount;
 
 import backtype.storm.Config;
 import backtype.storm.LocalCluster;
