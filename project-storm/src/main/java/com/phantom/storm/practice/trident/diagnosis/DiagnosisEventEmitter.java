@@ -23,8 +23,8 @@ public class DiagnosisEventEmitter implements Emitter<Long>, Serializable {
 			double lng = new Double(-120 + (int) (Math.random() * 70));
 			long time = System.currentTimeMillis();
 			String diag = new Integer(320 + (int) (Math.random() * 7)).toString();
-//			DiagnosisEvent event = new DiagnosisEventEmitter(lat, lng, time, diag);
-//			events.add(event);
+			DiagnosisEvent event = new DiagnosisEvent(lat, lng, time, diag);
+			events.add(event);
 			collector.emit(events);
 		}
 	}
@@ -37,5 +37,4 @@ public class DiagnosisEventEmitter implements Emitter<Long>, Serializable {
 	public void close() {
 
 	}
-
 }
