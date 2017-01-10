@@ -14,13 +14,11 @@ public class DiagnosisEventSpout implements ITridentSpout<Long> {
 	BatchCoordinator<Long> coordinator = new DefaultCoordinator();
 	Emitter<Long> emitter = new DiagnosisEventEmitter();
 
-	public BatchCoordinator<Long> getCoordinator(String txStateId, Map conf,
-			TopologyContext context) {
+	public BatchCoordinator<Long> getCoordinator(String txStateId, Map conf, TopologyContext context) {
 		return coordinator;
 	}
 
-	public Emitter<Long> getEmitter(String txStateId, Map conf,
-			TopologyContext context) {
+	public Emitter<Long> getEmitter(String txStateId, Map conf, TopologyContext context) {
 		return emitter;
 	}
 
