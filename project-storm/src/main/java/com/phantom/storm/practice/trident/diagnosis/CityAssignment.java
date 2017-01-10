@@ -35,10 +35,10 @@ public class CityAssignment extends BaseFunction{
 		double leastDistance = Double.MAX_VALUE;
 		String closestCity = "NONE";
 		
-		for(Entry<String, double[]> city : CITIES.entrySet()){
-			double R = 6371;
-			double x = (city.getValue()[0] - diagnosis.lng) * Math.cos((city.getValue()[0] 
-		}
+//		for(Entry<String, double[]> city : CITIES.entrySet()){
+//			double R = 6371;
+//			double x = (city.getValue()[0] - diagnosis.lng) * Math.cos((city.getValue()[0] 
+//		}
 		
 		
 		
