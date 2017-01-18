@@ -1,4 +1,4 @@
-package com.phantom.other.thread;
+package com.phantom.other.thread.traditional.thread;
 
 public class TraditionalThread {
 

@@ -1,4 +1,4 @@
-package com.phantom.other.thread;
+package com.phantom.other.thread.traditional.time;
 
 import java.util.Date;
 import java.util.Timer;
@@ -24,11 +24,11 @@ public class TraditionalTimerTest {
 				count = (count + 1) % 2;
 				System.out.println("bombing!");
 				new Timer().schedule(/*
-										 * new TimerTask() {
-										 * 
-										 * @Override public void run() {
-										 * System.out.println("bombing!"); } }
-										 */new MyTimerTask(), 2000 + 2000 * count);
+									 * new TimerTask() {
+									 * 
+									 * @Override public void run() {
+									 * System.out.println("bombing!"); } }
+									 */new MyTimerTask(), 2000 + 2000 * count);
 			}
 		}
 
@@ -43,6 +43,7 @@ public class TraditionalTimerTest {
 				e.printStackTrace();
 			}
 		}
+		
 	}
 
 }
