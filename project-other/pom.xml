@@ -18,6 +18,7 @@
 		<spring-context.version>2.5.6</spring-context.version>
 		<commons-logging.version>1.1.1</commons-logging.version>
 		<log4j.version>1.2.16</log4j.version>
+		<kafka.version>0.8.2.1</kafka.version>
 	</properties>
 
 	<dependencies>
@@ -38,7 +39,6 @@
 			<artifactId>spring-context</artifactId>
 			<version>${spring-context.version}</version>
 		</dependency>
-
 		<dependency>
 			<groupId>commons-logging</groupId>
 			<artifactId>commons-logging</artifactId>
@@ -48,6 +48,11 @@
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
 			<version>${log4j.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.kafka</groupId>
+			<artifactId>kafka_2.10</artifactId>
+			<version>${kafka.version}</version>
 		</dependency>
 	</dependencies>
 
