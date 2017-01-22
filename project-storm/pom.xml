@@ -6,7 +6,7 @@
 	<artifactId>project-storm</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
-	
+
 	<name>project-storm</name>
 	<url>http://maven.apache.org</url>
 
@@ -27,6 +27,11 @@
 		<dependency>
 			<groupId>org.apache.storm</groupId>
 			<artifactId>storm-core</artifactId>
+			<version>${storm.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.storm</groupId>
+			<artifactId>storm-kafka</artifactId>
 			<version>${storm.version}</version>
 		</dependency>
 		<dependency>
