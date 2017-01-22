@@ -14,6 +14,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<junit.version>3.8.1</junit.version>
 		<storm.version>0.9.6</storm.version>
+		<kafka.version>0.8.2.1</kafka.version>
 		<servlet.version>2.5</servlet.version>
 	</properties>
 
@@ -33,6 +34,11 @@
 			<groupId>org.apache.storm</groupId>
 			<artifactId>storm-kafka</artifactId>
 			<version>${storm.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.kafka</groupId>
+			<artifactId>kafka_2.10</artifactId>
+			<version>${kafka.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>javax.servlet</groupId>

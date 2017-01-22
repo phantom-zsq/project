@@ -1,4 +1,4 @@
-package com.phantom.other.kafka.examples;
+package com.phantom.kafka.examples;
 
 import java.util.Properties;
 
@@ -17,7 +17,7 @@ public class Producer extends Thread {
 		props.put("metadata.broker.list", "slave:9092");
 		producer = new kafka.javaapi.producer.Producer<Integer, String>(new ProducerConfig(props));
 	}
-	
+
 	public Producer(String topic) {
 
 		this();

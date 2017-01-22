@@ -1,4 +1,4 @@
-package com.phantom.other.kafka.examples;
+package com.phantom.kafka.examples;
 
 import kafka.api.FetchRequest;
 import kafka.api.FetchRequestBuilder;
@@ -22,8 +22,7 @@ public class SimpleConsumerDemo {
 	private static String topic3 = "topic3";
 	private static String clientId = "SimpleConsumerDemoClient";
 
-	private static void printMessages(ByteBufferMessageSet messageSet)
-			throws UnsupportedEncodingException {
+	private static void printMessages(ByteBufferMessageSet messageSet) throws UnsupportedEncodingException {
 
 		for (MessageAndOffset messageAndOffset : messageSet) {
 			ByteBuffer payload = messageAndOffset.message().payload();
@@ -50,15 +49,12 @@ public class SimpleConsumerDemo {
 
 		generateData();
 
-		SimpleConsumer simpleConsumer = new SimpleConsumer("slave", 9092,
-				100000, 64 * 1024, clientId);
+		SimpleConsumer simpleConsumer = new SimpleConsumer("slave", 9092, 100000, 64 * 1024, clientId);
 
 		System.out.println("Testing single fetch");
-		FetchRequest req = new FetchRequestBuilder().clientId(clientId)
-				.addFetch(topic2, 0, 0L, 100).build();
+		FetchRequest req = new FetchRequestBuilder().clientId(clientId).addFetch(topic2, 0, 0L, 100).build();
 		FetchResponse fetchResponse = simpleConsumer.fetch(req);
-		printMessages((ByteBufferMessageSet) fetchResponse
-				.messageSet(topic2, 0));
+		printMessages((ByteBufferMessageSet) fetchResponse.messageSet(topic2, 0));
 
 		System.out.println("Testing single multi-fetch");
 		Map<String, List<Integer>> topicMap = new HashMap<String, List<Integer>>() {
@@ -75,18 +71,15 @@ public class SimpleConsumerDemo {
 				});
 			}
 		};
-		req = new FetchRequestBuilder().clientId(clientId)
-				.addFetch(topic2, 0, 0L, 100).addFetch(topic3, 0, 0L, 100)
+		req = new FetchRequestBuilder().clientId(clientId).addFetch(topic2, 0, 0L, 100).addFetch(topic3, 0, 0L, 100)
 				.build();
 		fetchResponse = simpleConsumer.fetch(req);
 		int fetchReq = 0;
 		for (Map.Entry<String, List<Integer>> entry : topicMap.entrySet()) {
 			String topic = entry.getKey();
 			for (Integer offset : entry.getValue()) {
-				System.out.println("Response from fetch request no: "
-						+ ++fetchReq);
-				printMessages((ByteBufferMessageSet) fetchResponse.messageSet(
-						topic, offset));
+				System.out.println("Response from fetch request no: " + ++fetchReq);
+				printMessages((ByteBufferMessageSet) fetchResponse.messageSet(topic, offset));
 			}
 		}
 	}

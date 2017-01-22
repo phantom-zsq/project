@@ -1,4 +1,4 @@
-package com.phantom.other.kafka.examples;
+package com.phantom.kafka.examples;
 
 import java.util.HashMap;
 import java.util.List;
@@ -25,8 +25,7 @@ public class Consumer extends Thread {
 		props.put("zookeeper.session.timeout.ms", "400");
 		props.put("zookeeper.sync.time.ms", "200");
 		props.put("auto.commit.interval.ms", "1000000");
-		consumer = kafka.consumer.Consumer
-				.createJavaConsumerConnector(new ConsumerConfig(props));
+		consumer = kafka.consumer.Consumer.createJavaConsumerConnector(new ConsumerConfig(props));
 	}
 
 	public Consumer(String topic) {
@@ -37,15 +36,14 @@ public class Consumer extends Thread {
 
 	// push的方式
 	public void run() {
-		
+
 		Map<String, Integer> topicCountMap = new HashMap<String, Integer>();
 		topicCountMap.put(topic, new Integer(2));// 后面数字还应该是开几个线程去读取消息
 		Map<String, List<KafkaStream<byte[], byte[]>>> consumerMap = consumer.createMessageStreams(topicCountMap);
 		List<KafkaStream<byte[], byte[]>> streams = consumerMap.get(topic);
 		ExecutorService service = Executors.newFixedThreadPool(4);
-		for(final KafkaStream<byte[], byte[]> stream : streams){
+		for (final KafkaStream<byte[], byte[]> stream : streams) {
 			service.submit(new Runnable() {
-				@Override
 				public void run() {
 					ConsumerIterator<byte[], byte[]> it = stream.iterator();
 					while (it.hasNext())

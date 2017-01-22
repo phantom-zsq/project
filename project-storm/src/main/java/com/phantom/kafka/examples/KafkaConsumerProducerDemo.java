@@ -1,4 +1,4 @@
-package com.phantom.other.kafka.examples;
+package com.phantom.kafka.examples;
 
 public class KafkaConsumerProducerDemo {
 
