@@ -30,6 +30,7 @@ public class AreaFilterBolt implements IBasicBolt {
 			String orderArr[] = order.split("\\t");
 			// ared_id,order_amt,create_time
 			collector.emit(new Values(orderArr[3], orderArr[1], DateFmt.getCountDate(orderArr[2], DateFmt.date_short)));
+			System.err.println("AreaFilterBolt:"+order);
 		}
 	}
 

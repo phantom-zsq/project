@@ -46,6 +46,7 @@ public class Producer extends Thread {
 				break;
 			}
 		}
+		Utils.sleep(10000);
 	}
 
 	public static void main(String[] args) {

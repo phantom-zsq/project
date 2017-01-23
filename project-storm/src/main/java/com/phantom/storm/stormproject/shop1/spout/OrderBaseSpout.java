@@ -33,7 +33,7 @@ public class OrderBaseSpout implements IRichSpout {
 		if (queue.size() > 0) {
 			String str = queue.poll();
 			collector.emit(new Values(str));
-			System.err.println("spout:"+str);
+			System.err.println("OrderBaseSpout:"+str);
 		}
 	}
 

@@ -20,9 +20,9 @@ public class AreaAmtTopo {
 		TopologyBuilder builder = new TopologyBuilder();
 
 		builder.setSpout("spout", new OrderBaseSpout());
-//		builder.setBolt("filter", new AreaFilterBolt(), 5).shuffleGrouping("spout");
-//		builder.setBolt("areabolt", new AreaAmtBolt(), 2).fieldsGrouping("filter", new Fields("area_id"));
-//		builder.setBolt("rsltBolt", new AreaRsltBolt(), 1).shuffleGrouping("areabolt");
+		builder.setBolt("filter", new AreaFilterBolt(), 5).shuffleGrouping("spout");
+		builder.setBolt("areabolt", new AreaAmtBolt(), 2).fieldsGrouping("filter", new Fields("area_id"));
+		builder.setBolt("rsltBolt", new AreaRsltBolt(), 1).shuffleGrouping("areabolt");
 
 		Config conf = new Config();
 		conf.setDebug(false);

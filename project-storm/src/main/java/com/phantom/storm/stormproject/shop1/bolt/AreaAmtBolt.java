@@ -71,9 +71,9 @@ public class AreaAmtBolt implements IBasicBolt {
 		// 根据HBase里初始值进行初始化 countsMap
 		today = DateFmt.getCountDate(null, DateFmt.date_short);
 		countsMap = this.initMap(today, dao);
-		for (String key : countsMap.keySet()) {
-			System.err.println("key:" + key + "; value:" + countsMap.get(key));
-		}
+//		for (String key : countsMap.keySet()) {
+//			System.err.println("key:" + key + "; value:" + countsMap.get(key));
+//		}
 	}
 
 	@Override
@@ -90,7 +90,7 @@ public class AreaAmtBolt implements IBasicBolt {
 	public Map<String, Double> initMap(String rowKeyDate, HBaseDAO dao) {
 		
 		Map<String, Double> countsMap = new HashMap<String, Double>();
-		List<Result> list = dao.getRows("area_order", rowKeyDate, new String[] { "order_amt" });
+		List<Result> list = dao.getRows("ns1:area_order", rowKeyDate, new String[] { "order_amt" });
 
 		for (Result rsResult : list) {
 			String rowKey = new String(rsResult.getRow());

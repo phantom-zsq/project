@@ -18,8 +18,6 @@ public class AreaRsltBolt implements IBasicBolt {
 
 	Map<String, Double> countsMap = null;
 	HBaseDAO dao = null;
-	long beginTime = System.currentTimeMillis();
-	long endTime = 0L;
 
 	@Override
 	public void cleanup() {
@@ -32,18 +30,10 @@ public class AreaRsltBolt implements IBasicBolt {
 		String date_areaid = input.getString(0);
 		double order_amt = input.getDouble(1);
 		countsMap.put(date_areaid, order_amt);
-
-		endTime = System.currentTimeMillis();
-		if (endTime - beginTime >= 5 * 1000) {
-			for (String key : countsMap.keySet()) {
-				// put into hbase
-				// 2014-05-05_1,amt
-				dao.insert("area_order", key, "cf", "order_amt", countsMap.get(key) + "");
-				System.err.println("rsltBolt put hbase: key=" + key + "; order_amt=" + countsMap.get(key));
-			}
-			beginTime = System.currentTimeMillis();
-		}
-
+		// put into hbase
+		// 2014-05-05_1,amt
+		dao.insert("ns1:area_order", date_areaid, "cf", "order_amt", order_amt + "");
+		System.err.println("rsltBolt put hbase: key=" + date_areaid + "; order_amt=" + order_amt);
 	}
 
 	@Override
