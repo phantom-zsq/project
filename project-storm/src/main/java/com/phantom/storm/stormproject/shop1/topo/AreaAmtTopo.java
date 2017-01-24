@@ -23,9 +23,10 @@ public class AreaAmtTopo {
 		builder.setBolt("filter", new AreaFilterBolt(), 5).shuffleGrouping("spout");
 		builder.setBolt("areabolt", new AreaAmtBolt(), 2).fieldsGrouping("filter", new Fields("area_id"));
 		builder.setBolt("rsltBolt", new AreaRsltBolt(), 1).shuffleGrouping("areabolt");
-
+		
 		Config conf = new Config();
 		conf.setDebug(false);
+		conf.setNumWorkers(2);
 
 		if (args.length > 0) {
 			try {
