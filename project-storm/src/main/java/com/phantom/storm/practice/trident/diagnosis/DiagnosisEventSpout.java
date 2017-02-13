@@ -10,7 +10,6 @@ import storm.trident.spout.ITridentSpout;
 public class DiagnosisEventSpout implements ITridentSpout<Long> {
 
 	private static final long serialVersionUID = 1L;
-	SpoutOutputCollector collector;
 	BatchCoordinator<Long> coordinator = new DefaultCoordinator();
 	Emitter<Long> emitter = new DiagnosisEventEmitter();
 
