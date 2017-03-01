@@ -69,12 +69,19 @@ public class NIOClient {
 					}
 					// 设置成非阻塞
 					channel.configureBlocking(false);
-					// 在这里可以给服务端发送信息哦
-					channel.write(ByteBuffer.wrap(new String("request connect").getBytes()));
+					// 在这里可以给服务端发送信息
+					ByteBuffer buffer = ByteBuffer.allocate(1000);
+					String msg = "request connect";
+					buffer.put(msg.getBytes());
+					// 将缓冲区各标志复位,因为向里面put了数据,标志被改变。要想从中读取数据,就要复位
+					buffer.flip();
+					channel.write(buffer);
 					// 在和服务端连接成功之后，为了可以接收到服务端的信息，需要给通道设置读的权限。
 					channel.register(this.selector, SelectionKey.OP_READ);
 				} else if (key.isReadable()) {// 获得了可读的事件
 					read(key);
+				} else if (key.isWritable()) {
+					write(key);
 				}
 			}
 		}
@@ -97,6 +104,30 @@ public class NIOClient {
 		byte[] data = buffer.array();
 		String msg = new String(data).trim();
 		System.out.println("客户端收到信息：" + msg);
+		channel.register(this.selector, SelectionKey.OP_WRITE);
+	}
+	
+	/**
+	 * 写数据
+	 * 
+	 * @author 张少奇
+	 * @time 2017年1月11日 下午5:49:43
+	 * @param key
+	 * @throws IOException
+	 */
+	public void write(SelectionKey key) throws IOException {
+
+		// 客户端可写入消息:得到事件发生的Socket通道
+		SocketChannel channel = (SocketChannel) key.channel();
+		// 创建写入的缓冲区
+		ByteBuffer buffer = ByteBuffer.allocate(1000);
+		String msg = "客户端信息";
+		buffer.put(msg.getBytes());
+		// 将缓冲区各标志复位,因为向里面put了数据,标志被改变。要想从中读取数据,就要复位
+		buffer.flip();
+		System.out.println("客户端发送信息：" + msg);
+		channel.write(buffer);
+		channel.register(this.selector, SelectionKey.OP_READ);
 	}
 
 	/**
