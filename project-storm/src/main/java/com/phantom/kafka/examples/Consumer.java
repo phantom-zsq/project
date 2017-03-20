@@ -15,13 +15,13 @@ import kafka.javaapi.consumer.ConsumerConnector;
 public class Consumer extends Thread {
 
 	private ConsumerConnector consumer;
-	private String topic = "topic1";
+	private String topic = "topic_21";
 
 	public Consumer() {
 
 		Properties props = new Properties();
 		props.put("zookeeper.connect", "slave:2181");
-		props.put("group.id", "test_group");
+		props.put("group.id", "group_test_1");
 		props.put("zookeeper.session.timeout.ms", "400");
 		props.put("zookeeper.sync.time.ms", "200");
 		props.put("auto.commit.interval.ms", "1000000");
@@ -39,7 +39,7 @@ public class Consumer extends Thread {
 	public void run() {
 
 		Map<String, Integer> topicCountMap = new HashMap<String, Integer>();
-		topicCountMap.put(topic, new Integer(2));// 后面数字还应该是开几个线程去读取消息
+		topicCountMap.put(topic, new Integer(1));
 		Map<String, List<KafkaStream<byte[], byte[]>>> consumerMap = consumer.createMessageStreams(topicCountMap);
 		List<KafkaStream<byte[], byte[]>> streams = consumerMap.get(topic);
 		ExecutorService service = Executors.newFixedThreadPool(4);
