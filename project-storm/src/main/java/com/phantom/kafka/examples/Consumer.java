@@ -11,20 +11,19 @@ import kafka.consumer.ConsumerConfig;
 import kafka.consumer.ConsumerIterator;
 import kafka.consumer.KafkaStream;
 import kafka.javaapi.consumer.ConsumerConnector;
+import kafka.message.MessageAndMetadata;
 
 public class Consumer extends Thread {
 
 	private ConsumerConnector consumer;
-	private String topic = "topic_21";
+	private String topic = "topic11";
 
 	public Consumer() {
 
 		Properties props = new Properties();
 		props.put("zookeeper.connect", "slave:2181");
-		props.put("group.id", "group_test_1");
-		props.put("zookeeper.session.timeout.ms", "400");
-		props.put("zookeeper.sync.time.ms", "200");
-		props.put("auto.commit.interval.ms", "1000000");
+		props.put("group.id", "group11");
+		props.put("auto.commit.interval.ms", "1000");
 		ConsumerConfig consumerConfig = new ConsumerConfig(props);
 		consumer = kafka.consumer.Consumer.createJavaConsumerConnector(consumerConfig);
 	}
@@ -34,23 +33,35 @@ public class Consumer extends Thread {
 		this();
 		this.topic = topic;
 	}
-
+	
 	// push的方式
 	public void run() {
 
 		Map<String, Integer> topicCountMap = new HashMap<String, Integer>();
 		topicCountMap.put(topic, new Integer(1));
 		Map<String, List<KafkaStream<byte[], byte[]>>> consumerMap = consumer.createMessageStreams(topicCountMap);
-		List<KafkaStream<byte[], byte[]>> streams = consumerMap.get(topic);
-		ExecutorService service = Executors.newFixedThreadPool(4);
-		for (final KafkaStream<byte[], byte[]> stream : streams) {
-			service.submit(new Runnable() {
-				public void run() {
-					ConsumerIterator<byte[], byte[]> it = stream.iterator();
-					while (it.hasNext())
-						System.out.println(new String(it.next().message()));
-				}
-			});
-		}
+		
+		KafkaStream<byte[], byte[]> steam = consumerMap.get(topic).get(0);
+		ConsumerIterator<byte[], byte[]> iterator = steam.iterator();
+        while(iterator.hasNext()){
+            String message = new String(iterator.next().message());
+            System.out.println(message);
+        }
+        
+//		List<KafkaStream<byte[], byte[]>> streams = consumerMap.get(topic);
+//		ExecutorService service = Executors.newFixedThreadPool(1);
+//		for (final KafkaStream<byte[], byte[]> stream : streams) {
+//			service.submit(new Runnable() {
+//				public void run() {
+//					ConsumerIterator<byte[], byte[]> it = stream.iterator();
+//					while (it.hasNext()){
+//						MessageAndMetadata<byte[], byte[]> value = it.next();
+//						System.out.println(value.offset());
+//						System.out.println(value.key());
+//						System.out.println(value.message());
+//					}
+//				}
+//			});
+//		}
 	}
 }
